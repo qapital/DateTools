@@ -1426,7 +1426,14 @@ static NSCalendar *implicitCalendar = nil;
  *  @return NSString representing the formatted date string
  */
 -(NSString *)formattedDateWithStyle:(NSDateFormatterStyle)style{
-    return [self formattedDateWithStyle:style timeZone:[NSTimeZone systemTimeZone] locale:[NSLocale autoupdatingCurrentLocale]];
+    static NSDateFormatter *formatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [[NSDateFormatter alloc] init];
+        [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US"]]; // Default to US locale
+    });
+    
+    return [self formattedDateWithStyle:style timeZone:[NSTimeZone systemTimeZone] locale:formatter.locale];
 }
 
 /**
@@ -1485,7 +1492,13 @@ static NSCalendar *implicitCalendar = nil;
  *  @return NSString representing the formatted date string
  */
 -(NSString *)formattedDateWithFormat:(NSString *)format{
-    return [self formattedDateWithFormat:format timeZone:[NSTimeZone systemTimeZone] locale:[NSLocale autoupdatingCurrentLocale]];
+    static NSDateFormatter *formatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [[NSDateFormatter alloc] init];
+        [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US"]]; // Default to US locale
+    });
+    return [self formattedDateWithFormat:format timeZone:[NSTimeZone systemTimeZone] locale:formatter.locale];
 }
 
 /**
@@ -1527,8 +1540,10 @@ static NSCalendar *implicitCalendar = nil;
     dispatch_once(&onceToken, ^{
         formatter = [[NSDateFormatter alloc] init];
     });
-
-    [formatter setDateFormat:format];
+    
+    NSString *formatString = [NSDateFormatter dateFormatFromTemplate:format options:0
+                                                              locale:locale];
+    [formatter setDateFormat:formatString];
     [formatter setTimeZone:timeZone];
     [formatter setLocale:locale];
     return [formatter stringFromDate:self];
@@ -1583,6 +1598,16 @@ static NSCalendar *implicitCalendar = nil;
  */
 + (NSCalendar *)implicitCalendar {
     return implicitCalendar;
+}
+
++(void)setDefaultLocale:(NSLocale *)locale
+{
+    static NSDateFormatter *formatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [[NSDateFormatter alloc] init];
+        [formatter setLocale:locale];
+    });
 }
 
 @end
