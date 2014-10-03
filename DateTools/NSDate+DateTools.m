@@ -1433,7 +1433,7 @@ static NSCalendar *implicitCalendar = nil;
         [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US"]]; // Default to US locale
     });
     
-    return [self formattedDateWithStyle:style timeZone:[NSTimeZone systemTimeZone] locale:formatter.locale];
+    return [self formattedDateWithStyle:style timeZone:[NSTimeZone systemTimeZone] locale:[NSLocale autoupdatingCurrentLocale]];
 }
 
 /**
@@ -1492,13 +1492,7 @@ static NSCalendar *implicitCalendar = nil;
  *  @return NSString representing the formatted date string
  */
 -(NSString *)formattedDateWithFormat:(NSString *)format{
-    static NSDateFormatter *formatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [[NSDateFormatter alloc] init];
-        [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US"]]; // Default to US locale
-    });
-    return [self formattedDateWithFormat:format timeZone:[NSTimeZone systemTimeZone] locale:formatter.locale];
+    return [self formattedDateWithFormat:format timeZone:[NSTimeZone systemTimeZone] locale:[NSLocale autoupdatingCurrentLocale]];
 }
 
 /**
@@ -1598,16 +1592,6 @@ static NSCalendar *implicitCalendar = nil;
  */
 + (NSCalendar *)implicitCalendar {
     return implicitCalendar;
-}
-
-+(void)setDefaultLocale:(NSLocale *)locale
-{
-    static NSDateFormatter *formatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [[NSDateFormatter alloc] init];
-        [formatter setLocale:locale];
-    });
 }
 
 @end

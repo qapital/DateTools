@@ -165,5 +165,4 @@ NSLocalizedStringFromTableInBundle(key, @"DateTools", [NSBundle bundleWithPath:[
 #pragma mark - Helpers
 +(NSString *)defaultCalendarIdentifier;
 +(void)setDefaultCalendarIdentifier:(NSString *)identifier;
-+(void)setDefaultLocale:(NSLocale *)locale;
 @end
